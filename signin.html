@@ -9,6 +9,7 @@
     <meta name="keywords" content="blockit, uikit3, indonez, handlebars, scss, javascript">
     <meta name="author" content="Indonez">
     <meta name="theme-color" content="#1A5C96" />
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <!-- critical preload -->
     <link rel="preload" href="js/vendors/bootstrap.bundle.min.js" as="script">
     <link rel="preload" href="css/style.css" as="style">
@@ -28,7 +29,6 @@
     <link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon.png">
     <title>Sign in - Blockit Starter HTML5 Template</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <meta name="google-signin-client_id" content="7348136386-faht3poocle0uagelscv4rk78mopgof3.apps.googleusercontent.com">
 </head>
 
 <body>
@@ -73,12 +73,11 @@
                                     </h6>
                                     <div class="mb-3">
                                         <div id="g_id_onload"
-                                             data-client_id="7348136386-faht3poocle0uagelscv4rk78mopgof3.apps.googleusercontent.com"
-                                             data-context="signin"
-                                             data-ux_mode="popup"
-                                             data-callback="handleCredentialResponse"
-                                             data-auto_prompt="false"
-                                             data-allowed_parent_origin="http://localhost:3000">
+                                            data-client_id="7348136386-faht3poocle0uagelscv4rk78mopgof3.apps.googleusercontent.com"
+                                            data-context="signin"
+                                            data-ux_mode="redirect"
+                                            data-callback="handleCredentialResponse"
+                                            data-auto_prompt="false">
                                         </div>
                                         <div class="g_id_signin"
                                              data-type="standard"
@@ -100,15 +99,24 @@
             </div>
         </section>
     </main>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <script>
         function handleCredentialResponse(response) {
-            if (!response.credential) {
-                console.error('No credential received');
+            if (!response || !response.credential) {
+                console.error('Invalid response:', response);
+                document.getElementById("user-info").textContent = 'Authentication failed. Please try again.';
                 return;
             }
 
+            // Decode the JWT to get user info directly
+            const payload = JSON.parse(atob(response.credential.split('.')[1]));
+            console.log('User info:', payload);
+
+            document.getElementById("user-info").textContent = `Signed in as: ${payload.email}`;
+            document.querySelector(".g_id_signin").style.display = 'none';
+            document.getElementById("sign-out-btn").style.display = 'block';
+
+            // Only make the backend call if needed
             fetch('http://localhost:3000/auth/google', {
                 method: 'POST',
                 headers: {
@@ -118,42 +126,19 @@
                 body: JSON.stringify({
                     credential: response.credential
                 })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && data.email) {
-                    document.getElementById("user-info").textContent = `Signed in as: ${data.email}`;
-                    document.querySelector(".g_id_signin").style.display = 'none';
-                    document.getElementById("sign-out-btn").style.display = 'block';
-                } else {
-                    throw new Error('Invalid response data');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById("user-info").textContent = 'Failed to sign in. Please try again.';
+            }).catch(error => {
+                console.error('Backend error:', error);
+                // Don't reset UI since we already have user info from JWT
             });
         }
 
-        document.getElementById("sign-out-btn").addEventListener("click", function() {
-            google.accounts.id.disableAutoSelect();
-            document.getElementById("user-info").textContent = '';
-            document.querySelector(".g_id_signin").style.display = 'block';
-            this.style.display = 'none';
-            
-            fetch('http://localhost:3000/auth/logout', {
-                method: 'POST',
-                credentials: 'include'
-            })
-            .catch(error => {
-                console.error('Logout error:', error);
+        // Initialize Google Sign-In when the page loads
+        window.onload = function() {
+            google.accounts.id.initialize({
+                client_id: '7348136386-faht3poocle0uagelscv4rk78mopgof3.apps.googleusercontent.com',
+                callback: handleCredentialResponse
             });
-        });
+        };
     </script>
     <script src="server.js"></script>
     <script src="headerFooterManager.js" defer></script>
