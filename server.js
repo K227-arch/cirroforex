@@ -1,4 +1,4 @@
-// import 'dotenv/config';
+import 'dotenv/config';
 import express, { json } from 'express';
 import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
@@ -6,7 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 const app = express();
 app.use(cors());
 app.use(json());
-
+ 
 // Validate environment variables
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE) {
     console.error("❌ Missing Supabase environment variables.");

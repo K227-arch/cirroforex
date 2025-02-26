@@ -27,7 +27,8 @@
     <!-- Touch icon -->
     <link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon.png">
     <title>Sign in - Blockit Starter HTML5 Template</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta name="google-signin-client_id" content="7348136386-faht3poocle0uagelscv4rk78mopgof3.apps.googleusercontent.com">
 </head>
 
 <body>
@@ -71,9 +72,22 @@
                                         <span class="text-muted">Or sign in with</span>
                                     </h6>
                                     <div class="mb-3">
-                                        <button id="google-sign-in" class="btn btn-light bg-google">
-                                            <i class="fab fa-google me-2"></i>Sign in with Google
-                                        </button>
+                                        <div id="g_id_onload"
+                                             data-client_id="7348136386-faht3poocle0uagelscv4rk78mopgof3.apps.googleusercontent.com"
+                                             data-context="signin"
+                                             data-ux_mode="popup"
+                                             data-callback="handleCredentialResponse"
+                                             data-auto_prompt="false"
+                                             data-allowed_parent_origin="http://localhost:3000">
+                                        </div>
+                                        <div class="g_id_signin"
+                                             data-type="standard"
+                                             data-size="large"
+                                             data-theme="outline"
+                                             data-text="sign_in_with"
+                                             data-shape="rectangular"
+                                             data-logo_alignment="left">
+                                        </div>
                                     </div>
                                     <p id="user-info" class="mt-2"></p>
                                     <button id="sign-out-btn" class="btn btn-danger mt-2" style="display: none;">Sign Out</button>
@@ -86,36 +100,60 @@
             </div>
         </section>
     </main>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-    const signInBtn = document.getElementById("google-sign-in"); // Correct button ID
-    const signOutBtn = document.getElementById("sign-out-btn");
-    const userInfo = document.getElementById("user-info");
+        function handleCredentialResponse(response) {
+            if (!response.credential) {
+                console.error('No credential received');
+                return;
+            }
 
-    async function signInWithGoogle() {
-        account.createOAuth2Session(
-            'google',
-            'http://localhost:3000',
-            'http://localhost:3000'
-        )
-
-
-        try {
-            const response = await fetch("http://localhost:3000/auth/google", { method: "GET" });
-            if (!response.ok) throw new Error("Google sign-in failed.");
-
-            // Redirect user to Google's OAuth page
-            window.location.href = response.url;
-        } catch (error) {
-            console.error("Error signing in:", error);
+            fetch('http://localhost:3000/auth/google', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    credential: response.credential
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.email) {
+                    document.getElementById("user-info").textContent = `Signed in as: ${data.email}`;
+                    document.querySelector(".g_id_signin").style.display = 'none';
+                    document.getElementById("sign-out-btn").style.display = 'block';
+                } else {
+                    throw new Error('Invalid response data');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("user-info").textContent = 'Failed to sign in. Please try again.';
+            });
         }
-    }
 
-    if (signInBtn) {
-        signInBtn.addEventListener("click", signInWithGoogle);
-    }
-});
-
+        document.getElementById("sign-out-btn").addEventListener("click", function() {
+            google.accounts.id.disableAutoSelect();
+            document.getElementById("user-info").textContent = '';
+            document.querySelector(".g_id_signin").style.display = 'block';
+            this.style.display = 'none';
+            
+            fetch('http://localhost:3000/auth/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+            });
+        });
     </script>
     <script src="server.js"></script>
     <script src="headerFooterManager.js" defer></script>
