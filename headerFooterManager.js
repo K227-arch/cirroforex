@@ -5,7 +5,7 @@ class SpecialHeader extends HTMLElement {
         const logoAlt = "Company Logo";
         const navLinks = [
             { name: "Home", url: "index.html" },
-            { name: "Markets", url: "markets.html" },
+            { name: "Products", url: "markets.html" },
             { name: "Company", dropdown: [
                 { name: "About", url: "about.html" },
                 { name: "Blog", url: "blog.html" },
@@ -32,7 +32,7 @@ class SpecialHeader extends HTMLElement {
                         <ul class="navbar-nav">${this.generateNavItems(navLinks)}</ul>
                         <div class="optional-link d-flex align-items-center ms-4">
                             <a href="signin.html" class="btn btn-link me-3" aria-label="Login"><i class="fas fa-circle-user"></i> Login</a>
-                            <a href="signin.html" class="btn btn-info">Request a demo</a>
+                           
                         </div>
                     </div>
                 </div>
