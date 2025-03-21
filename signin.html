@@ -29,6 +29,7 @@
     <link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon.png">
     <title>Sign in - Blockit Starter HTML5 Template</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script type="module" src="signup.js" defer></script>
 </head>
 
 <body>
@@ -46,7 +47,7 @@
                                         <div class="row g-1">
                                             <div class="col-12">
                                                 <div class="input-group">
-                                                    <input id="username" type="text" class="form-control" placeholder="Username" aria-label="Username">
+                                                    <input id="email" type="text" class="form-control" placeholder="Email" aria-label="Username">
                                                     <span class="input-group-text"><i class="fas fa-user fa-xs text-muted"></i></span>
                                                 </div>
                                             </div>
@@ -64,7 +65,7 @@
                                                 <a href="#" class="link-dark text-decoration-none"><small>Forgot password?</small></a>
                                             </div>
                                             <div class="d-grid">
-                                                <button type="submit" class="btn btn-primary" name="submit">Sign in</button>
+                                                <button id="submit" type="submit" class="btn btn-primary" name="submit">Sign in</button>
                                             </div>
                                         </div>
                                     </form>
@@ -141,6 +142,7 @@
         };
     </script>
     <script src="server.js"></script>
+    <script src="signup.js"></script>
     <script src="headerFooterManager.js" defer></script>
     <script src="js/vendors/bootstrap.bundle.min.js"></script>
     <script src="js/utilities.min.js"></script>
