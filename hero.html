@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gold in Bank! – Premium Gold Forex Signals</title>
+  <style>
+    /* ==== BASE & RESET ==== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    a { text-decoration: none; }
+    .container { width: 90%; max-width: 1200px; margin: 0 auto; }
+
+    /* ==== HERO ==== */
+    .hero {
+      background: linear-gradient(135deg, #b7861d, #ffd700);
+      color: #fff; text-align: center; padding: 4rem 1rem;
+    }
+    .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+    .hero p { font-size: 1.2rem; margin-bottom: 2rem; }
+
+    /* Thumb‑friendly buttons (44×44px+) for mobile ergonomics)  [oai_citation:0‡Stack Overflow](https://stackoverflow.com/questions/68420905/style-the-tawk-to-chat-widget-with-my-custom-css?utm_source=chatgpt.com) */
+    .btn {
+      display: inline-block; padding: 0.75rem 1.5rem; min-width: 44px; min-height: 44px;
+      border-radius: 5px; font-weight: bold; cursor: pointer;
+    }
+    .btn-primary { background: #fff; color: #b7861d; }
+    .btn-alt    { background: #b7861d; color: #fff; }
+
+    /* ==== FEATURES ==== */
+    .features { padding: 3rem 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+
+    /* ==== SIGNALS FEED WITH LAZY LOADING ==== */
+    .signals { padding: 3rem 0; }
+    .signals h2 { text-align: center; margin-bottom: 2rem; }
+    .signal-list { list-style: none; max-height: 400px; overflow: auto; }
+    .signal-item {
+      background: #fff; padding: 1rem; margin-bottom: 1rem;
+      border-left: 5px solid #b7861d;
+    }
+    /* Placeholder spinner for lazy‑loaded items */ 
+    .loading { text-align: center; padding: 1rem; }
+
+    /* ==== PERFORMANCE SUMMARY ==== */
+    .performance { padding: 2rem 0; background: #f9f9f9; text-align: center; }
+    .performance h3 { margin-bottom: 1rem; }
+    .performance p { font-size: 1rem; }
+
+    /* ==== PRICING & ONE‑PAGE CHECKOUT MODAL ==== */
+    .pricing { padding: 3rem 0; background: #f1f1f1; text-align: center; }
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); justify-content: center; align-items: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: #fff; padding: 2rem; border-radius: 8px; width: 90%; max-width: 400px;
+    }
+    .modal-close { float: right; cursor: pointer; font-size: 1.2rem; }
+
+    footer { background: #333; color: #ccc; padding: 2rem 1rem; text-align: center; }
+    footer a { color: #ffd700; }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero container">
+    <h1>Gold in Bank!</h1>
+    <p>Get real‑time, profit‑driven gold forex signals. Never miss a market move.</p>
+    <!-- A/B CTA buttons for testing  [oai_citation:1‡Medium](https://fzn0x.medium.com/three-types-of-lazy-loading-in-javascript-with-example-8534cb2c6fd2?utm_source=chatgpt.com) [oai_citation:2‡YouTube](https://www.youtube.com/watch?v=S4dEkkqMGv8&utm_source=chatgpt.com) -->
+    <button class="btn btn-primary" id="cta-subscribe">Subscribe Now</button>
+    <button class="btn btn-alt"     id="cta-club">Join Gold Club</button>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features container">
+    <div class="feature">
+      <h3>Accurate Signals</h3>
+      <p>Developed by expert analysts using proven strategies.</p>
+    </div>
+    <div class="feature">
+      <h3>Instant Alerts</h3>
+      <p>Receive notifications via email and SMS immediately.</p>
+    </div>
+    <div class="feature">
+      <h3>24/7 Support</h3>
+      <p>Chat live with us via the widget in the corner.  [oai_citation:3‡help.tawk.to](https://help.tawk.to/article/adding-a-widget-to-your-website?utm_source=chatgpt.com)</p>
+    </div>
+  </section>
+
+  <!-- SIGNAL PERFORMANCE -->
+  <section class="performance container">
+    <h3>Last Month’s Performance</h3>
+    <p>Average profit per signal: <strong>3.2%</strong> | Win rate: <strong>78%</strong></p>
+  </section>
+
+  <!-- SIGNALS FEED -->
+  <section id="signals" class="signals container">
+    <h2>Latest Signals</h2>
+    <ul class="signal-list" id="signalList">
+      <!-- JS will auto‑inject items here via fetch() → REST API  [oai_citation:4‡Stack Overflow](https://stackoverflow.com/questions/16803546/simplest-way-to-lazy-load-long-ul-with-many-lis?utm_source=chatgpt.com) -->
+    </ul>
+    <div class="loading" id="loading">Loading more…</div>
+  </section>
+
+  <!-- PRICING & CHECKOUT -->
+  <section class="pricing container">
+    <h2>Subscribe</h2>
+    <button class="btn btn-primary" id="open-modal">Choose Plan</button>
+  </section>
+
+  <!-- ONE‑PAGE CHECKOUT MODAL -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="modal-close" id="close-modal">&times;</span>
+      <h3>Subscribe Now</h3>
+      <form id="checkoutForm">
+        <label>
+          Email:<br/>
+          <input type="email" name="email" required style="width:100%;padding:0.5rem;margin:0.5rem 0"/>
+        </label><br/>
+        <label>
+          Card Details:<br/>
+          <!-- Replace with your payment gateway embed (e.g. Stripe Elements)  [oai_citation:5‡YouTube](https://www.youtube.com/watch?v=S4dEkkqMGv8&utm_source=chatgpt.com) -->
+          <div id="card-element"></div>
+        </label><br/>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Confirm & Pay</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- CHATBOT (tawk.to) -->
+  <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+      var s=document.createElement("script"), 
+          e=document.getElementsByTagName("script")[0];
+      s.async=true;
+      s.src='https://embed.tawk.to/YOUR_TAWK_ID/default';
+      s.charset='UTF-8';
+      s.setAttribute('crossorigin','*');
+      e.parentNode.insertBefore(s,e);
+    })();
+  </script><!--  [oai_citation:6‡tawk.to](https://www.tawk.to/?utm_source=chatgpt.com) -->
+
+  <!-- SCRIPTS: signal injection, lazy loading, modal logic -->
+  <script>
+    // 1. Automated Signal Injection via REST API  [oai_citation:7‡Stack Overflow](https://stackoverflow.com/questions/16803546/simplest-way-to-lazy-load-long-ul-with-many-lis?utm_source=chatgpt.com)
+    const list = document.getElementById('signalList');
+    let page = 1, loading = document.getElementById('loading');
+
+    async function loadSignals() {
+      const res = await fetch(`/api/signals?page=${page}`);
+      const data = await res.json(); // expecting { signals: [...] }
+      data.signals.forEach(sig => {
+        const li = document.createElement('li');
+        li.className = 'signal-item';
+        li.textContent = `${sig.time} GMT: ${sig.action} GOLD @ ${sig.price}. SL: ${sig.stopLoss}. TP: ${sig.takeProfit}.`;
+        list.appendChild(li);
+      });
+      if (data.hasMore) page++;
+      else loading.textContent = '— End of Signals —';
+    }
+
+    // 2. Lazy‑load older signals when scrolled into view  [oai_citation:8‡MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading?utm_source=chatgpt.com)
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) loadSignals();
+    }, { root: list, threshold: 1.0 });
+    observer.observe(loading);
+
+    // Initial load
+    loadSignals();
+
+    // 3. Modal One‑Page Checkout logic  [oai_citation:9‡YouTube](https://www.youtube.com/watch?v=S4dEkkqMGv8&utm_source=chatgpt.com)
+    const modal = document.getElementById('modal'),
+          openBtn = document.getElementById('open-modal'),
+          closeBtn= document.getElementById('close-modal');
+    openBtn.onclick  = () => modal.classList.add('active');
+    closeBtn.onclick = () => modal.classList.remove('active');
+    document.getElementById('checkoutForm').onsubmit = e => {
+      e.preventDefault();
+      // Integrate with your payment gateway SDK here (e.g. Stripe.confirmCardPayment…)
+      alert('Payment flow would be triggered here.');
+    };
+
+    // 4. A/B CTA Tracking (example)  [oai_citation:10‡Medium](https://fzn0x.medium.com/three-types-of-lazy-loading-in-javascript-with-example-8534cb2c6fd2?utm_source=chatgpt.com)
+    document.getElementById('cta-subscribe').onclick = () => console.log('CTA: Subscribe Now');
+    document.getElementById('cta-club').onclick      = () => console.log('CTA: Join Gold Club');
+  </script>
+</body>
+</html>
